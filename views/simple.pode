@@ -1,0 +1,107 @@
+<html>
+    <head>
+        <title>Prod Web Checks</title>
+        <meta http-equiv="refresh" content="30" >
+        <link rel="stylesheet" type="text/css" href="styles/simple.css.pode">
+        <script type="text/javascript" src="scripts/simple.js.pode"></script>
+    </head>
+    
+    <body>
+        <ul>
+        $(
+            $dateTime = (Get-Date).ToUniversalTime()
+
+            "<h1>EU1 Prod Web Tier - Health Checks - $dateTime</h1>"
+
+  
+            "<table id='myTable'>
+                    <tr>
+                      <td>Row1 cell1</td>
+                      <td>Row1 cell2</td>
+                    </tr>
+                    <tr>
+                      <td>Row2 cell1</td>
+                      <td>Row2 cell2</td>
+                    </tr>
+                    <tr>
+                      <td>Row3 cell1</td>
+                      <td>Row3 cell2</td>
+                    </tr>
+                  </table>
+                  <br>"
+       
+            $siteListdata = @("web-vm1", "web-vm2", "web-vm3", "web-vm4" )
+
+            #create the results array
+            $Result = @()
+              
+            Foreach($hostName in $siteListdata) 
+            {
+                $memory = ((Get-Counter -ComputerName $hostName '\Memory\Available MBytes').countersamples | Select-Object cookedvalue).cookedvalue
+                $cpu = [math]::round((((Get-Counter -ComputerName $hostName '\Processor(_Total)\% Processor Time').countersamples | Select-Object cookedvalue).cookedvalue))
+    
+
+                $uri = "http://$($hostName)/hello.htm"
+                $time = try{
+                $request = $null
+                ## Request the URI, and measure how long the response took.
+                $result1 = Measure-Command { $request = Invoke-WebRequest -Uri $uri }
+                $result1.TotalMilliseconds
+                } 
+            catch
+            {
+            #Called in the event there's a 404
+            $request = $_.Exception.Response
+            $time = -1
+            }  
+                
+                $dateTime = Get-Date
+                $statusCode = [int] $request.StatusCode
+                $statusDescription = $request.StatusDescription
+                $responseLength = "$($request.RawContentLength) bytes"
+                $timeTaken =  $time
+                
+            
+                "<li><b>Hostname:</b> $hostName</li>";
+                "<li>CPU used: $cpu %</li>";
+                "<li>RAM Free: $memory MB </li>";
+                    
+                "<li>Web Checks: $uri </li>";
+                "<li>StatusCode: $statusCode </li>";
+                "<li>StatusDescription: $statusDescription</li>";
+                "<li>ResponseLength: $responseLength</li>";
+                "<li>TimeTaken: $timeTaken ms</li>";
+                
+                    
+                if($statusCode -ne "200")
+                {
+                    "<b>THIS IS A TEST ERROR - No Status 200</b>"
+                    "<br>"
+                }
+                if($TimeTaken -gt 80)
+                {
+                    "<b>THIS IS A TEST ERROR - Bad response time</b>"
+                    "<br>"
+                }
+                if($memory -lt 2000)
+                {
+                    "<b>THIS IS A TEST ERROR - Low Free Memory</b>"
+                    "<br>"
+                }
+                if($cpu -gt 40)
+                {
+                    "<b>THIS IS A TEST ERROR - High CPU usage</b>"
+                    "<br>"
+                }
+                
+
+                #newline
+                "<p>"
+            }
+   
+        )
+
+    </ul>
+        
+    </body>
+</html>
