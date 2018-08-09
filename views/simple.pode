@@ -6,7 +6,7 @@
         <script type="text/javascript" src="scripts/simple.js.pode"></script>
     </head>
     
-    <body>
+    <body onload="changeContent()">
         <ul>
         $(
             $dateTime = (Get-Date).ToUniversalTime()
@@ -16,30 +16,26 @@
   
             "<table id='myTable'>
                     <tr>
-                      <td>Row1 cell1</td>
-                      <td>Row1 cell2</td>
+                      <td></td>
+                      <td></td>
                     </tr>
                     <tr>
-                      <td>Row2 cell1</td>
-                      <td>Row2 cell2</td>
-                    </tr>
-                    <tr>
-                      <td>Row3 cell1</td>
-                      <td>Row3 cell2</td>
+                      <td></td>
+                      <td></td>
                     </tr>
                   </table>
                   <br>"
        
-            $siteListdata = @("web-vm1", "web-vm2", "web-vm3", "web-vm4" )
+            $siteListdata = @("127.0.0.1", "127.0.0.2", "127.0.0.3", "127.0.0.4" )
 
             #create the results array
             $Result = @()
-              
+            $indexNo = 1
             Foreach($hostName in $siteListdata) 
             {
                 $memory = ((Get-Counter -ComputerName $hostName '\Memory\Available MBytes').countersamples | Select-Object cookedvalue).cookedvalue
                 $cpu = [math]::round((((Get-Counter -ComputerName $hostName '\Processor(_Total)\% Processor Time').countersamples | Select-Object cookedvalue).cookedvalue))
-    
+                
 
                 $uri = "http://$($hostName)/hello.htm"
                 $time = try{
@@ -60,44 +56,75 @@
                 $statusDescription = $request.StatusDescription
                 $responseLength = "$($request.RawContentLength) bytes"
                 $timeTaken =  $time
-                
-            
-                "<li><b>Hostname:</b> $hostName</li>";
-                "<li>CPU used: $cpu %</li>";
-                "<li>RAM Free: $memory MB </li>";
-                    
-                "<li>Web Checks: $uri </li>";
-                "<li>StatusCode: $statusCode </li>";
-                "<li>StatusDescription: $statusDescription</li>";
-                "<li>ResponseLength: $responseLength</li>";
-                "<li>TimeTaken: $timeTaken ms</li>";
-                
-                    
-                if($statusCode -ne "200")
+         
+                switch ($indexNo)
                 {
-                    "<b>THIS IS A TEST ERROR - No Status 200</b>"
-                    "<br>"
+                    1 {$rowNo = 0;$colNo = 0}
+                    2 {$rowNo = 0;$colNo = 1}
+                    3 {$rowNo = 1;$colNo = 0}
+                    4 {$rowNo = 1;$colNo = 1}
                 }
-                if($TimeTaken -gt 80)
-                {
-                    "<b>THIS IS A TEST ERROR - Bad response time</b>"
-                    "<br>"
-                }
-                if($memory -lt 2000)
-                {
-                    "<b>THIS IS A TEST ERROR - Low Free Memory</b>"
-                    "<br>"
-                }
-                if($cpu -gt 40)
-                {
-                    "<b>THIS IS A TEST ERROR - High CPU usage</b>"
-                    "<br>"
-                }
-                
+                $results = $null
 
-                #newline
-                "<p>"
-            }
+                #testing for now
+                $results += "test"
+
+                #Going to put the below results HTML into the results array once it works
+                            "<li><b>Hostname:</b> $hostName</li>";
+                            "<li>CPU used: $cpu %</li>";
+                            "<li>RAM Free: $memory MB </li>";
+                                
+                            "<li>Web Checks: $uri </li>";
+                            "<li>StatusCode: $statusCode </li>";
+                            "<li>StatusDescription: $statusDescription</li>";
+                            "<li>ResponseLength: $responseLength</li>";
+                            "<li>TimeTaken: $timeTaken ms</li>";
+                            "<li>Indexn: $indexNo </li>";
+                            
+                            if($statusCode -ne "200")
+                            {
+                                "<b>THIS IS A TEST ERROR - No Status 200</b>"
+                                "<br>"
+                            }
+                            if($TimeTaken -gt 80)
+                            {
+                                "<b>THIS IS A TEST ERROR - Bad response time</b>"
+                                "<br>"
+                            }
+                            if($memory -lt 2000)
+                            {
+                                "<b>THIS IS A TEST ERROR - Low Free Memory</b>"
+                                "<br>"
+                            }
+                            if($cpu -gt 40)
+                            {
+                                "<b>THIS IS A TEST ERROR - High CPU usage</b>"
+                                "<br>"
+                            }
+                            
+                            #newline
+                            "<p>"
+                            
+                            $indexNo++
+                        
+                        
+                    }
+
+                    #table build outside of the foreach loop to try and avoid it getting reset somehow
+                    "<script type='text/javascript'>
+                        function changeContent(){
+                        var x=document.getElementById('myTable').rows
+                        
+                        var y=x['0'].cells
+                        y['0'].innerHTML='$($results[0])'
+                        var y=x['0'].cells
+                        y['1'].innerHTML='$($results[1])'
+                        var y=x['1'].cells
+                        y['0'].innerHTML='$($results[2])'
+                        var y=x['1'].cells
+                        y['1'].innerHTML='$($results[3])'
+                        }
+                    </script>"
    
         )
 
