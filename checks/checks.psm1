@@ -35,7 +35,7 @@ function checkAzureLB($LBrg,$lbName,$tenantID,$alertType,$slackURI,$slackChan,$s
     else
     {
     
-    return "You have $($lbNodeCount) nodes out of the total $($webvms.count) Web Servers in the Load Balancer pool."
+    return "You have $($lbNodeCount) nodes out of the total $($webvms.count) Web Servers in the Load Balancer pool '$lbName', resource group : '$LBrg'."
     }
 
 }
