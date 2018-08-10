@@ -14,9 +14,14 @@ param (
     [string]
     $slackURI,
     [string]
-    $slackChannel
-
-)
+    $slackChannel,
+    [string]
+    $alertType, #slack or email
+    [string]
+    $LBrg,
+    [string]
+    $LBname
+ )
 
 #Module Imports
 if ((Get-Module -Name Pode | Measure-Object).Count -ne 0)
@@ -74,7 +79,7 @@ Server -Threads 2 {
     route 'get' '/' {
         param($session) 
         view 'simple' -Data @{ 'hostsListdata' = $hostsListdata; 'smtpUser' = $smtpUser;'smtpPassword' = $smtpPassword;'smtpServer' = $smtpServer; 'smtpAlertTarget' = $smtpAlertTarget;`
-                                'slackChannel' = $slackChannel; 'slackURI' = $slackURI } 
+                                'slackChannel' = $slackChannel; 'slackURI' = $slackURI; 'alertType' = $alertType; 'LBrg' = $LBrg; 'LBname' = $LBname; 'tenantID' = $tenantID } 
     }
 
     # GET request throws fake "500" server error status code

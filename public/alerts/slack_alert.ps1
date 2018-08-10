@@ -1,15 +1,7 @@
-param (
-     [string]
-    $message,
-    [string]
-    $channel,
-    [string]
-    $slackURI
-)
-
 $iconUrl = "https://i1.kym-cdn.com/photos/images/original/000/154/766/406.png"
 
-function slackMessage($message)
+
+function slackMessage($message, $slackURI, $channel)
 {
     # generate the request
     $payload = @{
