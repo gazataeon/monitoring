@@ -1,9 +1,9 @@
 param (
-     [securestring]
+     [string]
     $message,
     [string]
     $channel,
-    [securestring]
+    [string]
     $slackURI
 )
 
