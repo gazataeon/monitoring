@@ -1,134 +1,82 @@
 <html>
     <head>
         <title>Prod Web Checks</title>
-        <meta http-equiv="refresh" content="30" >
-        <link rel="stylesheet" type="text/css" href="styles/simple.css.pode">
-        <script type="text/javascript" src="scripts/simple.js.pode"></script>
+        <meta http-equiv="refresh" content="30">
     </head>
     
-    <body onload="changeContent()">
-        <ul>
-        $(
-            $dateTime = (Get-Date).ToUniversalTime()
+    <body>
+        <h1>EU1 Prod Web Tier - Health Checks - $((Get-Date).ToUniversalTime())</h1>
 
-            "<h1>EU1 Prod Web Tier - Health Checks - $dateTime</h1>"
+        <table id='myTable'>
+            $(
+                $siteListdata = @("127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1")
+                $columns = 4
+                $rows = [System.Math]::Ceiling($siteListdata.Length / $columns)
 
-  
-            "<table id='myTable'>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                  </table>
-                  <br>"
-       
-            $siteListdata = @("127.0.0.1", "127.0.0.2", "127.0.0.3", "127.0.0.4" )
-
-            #create the results array
-            $Result = @()
-            $indexNo = 1
-            Foreach($hostName in $siteListdata) 
-            {
-                $memory = ((Get-Counter -ComputerName $hostName '\Memory\Available MBytes').countersamples | Select-Object cookedvalue).cookedvalue
-                $cpu = [math]::round((((Get-Counter -ComputerName $hostName '\Processor(_Total)\% Processor Time').countersamples | Select-Object cookedvalue).cookedvalue))
-                
-
-                $uri = "http://$($hostName)/hello.htm"
-                $time = try{
-                $request = $null
-                ## Request the URI, and measure how long the response took.
-                $result1 = Measure-Command { $request = Invoke-WebRequest -Uri $uri }
-                $result1.TotalMilliseconds
-                } 
-            catch
-            {
-            #Called in the event there's a 404
-            $request = $_.Exception.Response
-            $time = -1
-            }  
-                
-                $dateTime = Get-Date
-                $statusCode = [int] $request.StatusCode
-                $statusDescription = $request.StatusDescription
-                $responseLength = "$($request.RawContentLength) bytes"
-                $timeTaken =  $time
-         
-                switch ($indexNo)
+                for ($row = 0; $row -lt $rows; $row++)
                 {
-                    1 {$rowNo = 0;$colNo = 0}
-                    2 {$rowNo = 0;$colNo = 1}
-                    3 {$rowNo = 1;$colNo = 0}
-                    4 {$rowNo = 1;$colNo = 1}
-                }
-                $results = $null
+                    "<tr>"
 
-                #testing for now
-                $results += "test"
+                    for ($col = 0; $col -lt $columns; $col++)
+                    {
+                        $hostName = $siteListdata[(4*$row)+$col]
+                        if ([string]::IsNullOrWhiteSpace($hostName)) {
+                            continue
+                        }
 
-                #Going to put the below results HTML into the results array once it works
-                            "<li><b>Hostname:</b> $hostName</li>";
-                            "<li>CPU used: $cpu %</li>";
-                            "<li>RAM Free: $memory MB </li>";
-                                
-                            "<li>Web Checks: $uri </li>";
-                            "<li>StatusCode: $statusCode </li>";
-                            "<li>StatusDescription: $statusDescription</li>";
-                            "<li>ResponseLength: $responseLength</li>";
-                            "<li>TimeTaken: $timeTaken ms</li>";
-                            "<li>Indexn: $indexNo </li>";
-                            
-                            if($statusCode -ne "200")
-                            {
-                                "<b>THIS IS A TEST ERROR - No Status 200</b>"
-                                "<br>"
+                        $memory = ((Get-Counter -ComputerName $hostName '\Memory\Available MBytes').countersamples | Select-Object cookedvalue).cookedvalue
+                        $cpu = [math]::round((((Get-Counter -ComputerName $hostName '\Processor(_Total)\% Processor Time').countersamples | Select-Object cookedvalue).cookedvalue))
+
+                        $uri = "http://$($hostName)/hello.htm"
+                        $time = try {
+                            $result1 = Measure-Command { $request = Invoke-WebRequest -Uri $uri }
+                            $result1.TotalMilliseconds
+                        } 
+                        catch {
+                            #Called in the event there's a 404
+                            $request = $_.Exception.Response
+                            $time = -1
+                        }
+
+                        $statusCode = [int] $request.StatusCode
+                        $statusDescription = $request.StatusDescription
+                        $responseLength = "$($request.RawContentLength) bytes"
+                        $timeTaken =  $time
+
+                        "<td style='border-width:1px;border-style:solid;padding:5px'>
+                            <h2>$hostName</h2>
+                            <ul>
+                                <li>CPU Used: $cpu %</li>
+                                <li>RAM Free: $memory MB </li>
+                                    
+                                <li>Web Checks: $uri </li>
+                                <li>Status Code: $statusCode </li>
+                                <li>Status Description: $statusDescription</li>
+                                <li>Response Length: $responseLength</li>
+                                <li>Time Taken: $timeTaken ms</li>
+                            </ul>
+
+                            $(if($statusCode -ne 200) {
+                                "<b>THIS IS A TEST ERROR - No Status 200</b><br/>"
                             }
-                            if($TimeTaken -gt 80)
-                            {
-                                "<b>THIS IS A TEST ERROR - Bad response time</b>"
-                                "<br>"
+
+                            if($TimeTaken -gt 80) {
+                                "<b>THIS IS A TEST ERROR - Bad response time</b><br/>"
                             }
-                            if($memory -lt 2000)
-                            {
-                                "<b>THIS IS A TEST ERROR - Low Free Memory</b>"
-                                "<br>"
+
+                            if($memory -lt 2000) {
+                                "<b>THIS IS A TEST ERROR - Low Free Memory</b><br/>"
                             }
-                            if($cpu -gt 40)
-                            {
-                                "<b>THIS IS A TEST ERROR - High CPU usage</b>"
-                                "<br>"
-                            }
-                            
-                            #newline
-                            "<p>"
-                            
-                            $indexNo++
-                        
-                        
+
+                            if($cpu -gt 40) {
+                                "<b>THIS IS A TEST ERROR - High CPU usage</b><br/>"
+                            })
+                        </td>"
                     }
 
-                    #table build outside of the foreach loop to try and avoid it getting reset somehow
-                    "<script type='text/javascript'>
-                        function changeContent(){
-                        var x=document.getElementById('myTable').rows
-                        
-                        var y=x['0'].cells
-                        y['0'].innerHTML='$($results[0])'
-                        var y=x['0'].cells
-                        y['1'].innerHTML='$($results[1])'
-                        var y=x['1'].cells
-                        y['0'].innerHTML='$($results[2])'
-                        var y=x['1'].cells
-                        y['1'].innerHTML='$($results[3])'
-                        }
-                    </script>"
-   
-        )
-
-    </ul>
-        
+                    "</tr>"
+                }
+            )
+        </table>
     </body>
 </html>
