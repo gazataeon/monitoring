@@ -10,7 +10,11 @@ param (
     [string]
     $smtpAlertTarget,
     [string]
-    $hostsListFile
+    $hostsListFile,
+    [string]
+    $slackURI,
+    [string]
+    $slackChannel
 
 )
 
@@ -21,8 +25,21 @@ if ((Get-Module -Name Pode | Measure-Object).Count -ne 0)
 }
 Import-Module Pode
 
-#Pull in Vars
-$hostsListdata = Get-Content $hostsListFile 
+#Pull in hosts to check
+If (!([string]::IsNullOrEmpty($hostsListFile)))
+{
+    $hostsListdata = Get-Content $hostsListFile
+}
+else 
+{
+    $hostsListdata = @("127.0.0.1", "127.0.0.1")
+}
+
+if ([string]::IsNullOrEmpty($hostsListdata))
+{
+    ThrowError -ExceptionMessage "Your Host List Text file is empty!"
+    $hostsListdata = "ERROR"
+}
 
 
 # create a server, and start listening on port 8085
@@ -55,9 +72,9 @@ Server -Threads 2 {
 
     # GET request for web page on "localhost:8085/"
     route 'get' '/' {
-        param($session)
-        view 'simple' -Data @{ 'smtpUser' = @($smtpUser);'smtpPassword' = @($smtpPassword);'smtpServer' = @($smtpServer);`
-        'smtpAlertTarget' = @($smtpAlertTarget);'hostsListdata' = @($hostsListdata);}
+        param($session) 
+        view 'simple' -Data @{ 'hostsListdata' = $hostsListdata; 'smtpUser' = $smtpUser;'smtpPassword' = $smtpPassword;'smtpServer' = $smtpServer; 'smtpAlertTarget' = $smtpAlertTarget;`
+                                'slackChannel' = $slackChannel; 'slackURI' = $slackURI } 
     }
 
     # GET request throws fake "500" server error status code

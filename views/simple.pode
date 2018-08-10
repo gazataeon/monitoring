@@ -7,9 +7,23 @@
     <body>
         <h1>EU1 Prod Web Tier - Health Checks - $((Get-Date).ToUniversalTime())</h1>
 
+        
         <table id='myTable'>
             $(
-                $siteListdata = @("127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1")
+                # Import Alert files - Also commented out because not working yet
+                # . .\alerts\email_alert.ps1
+                # . .\alerts\slack_alert.ps1
+
+                # Should pull in the hosts to be checked from the params - doesnt though because REASONS!
+                If (!([string]::IsNullOrEmpty($data.hostsListdata)))
+                {
+                    $siteListdata = $data.hostsListdata
+                }
+                else # do this in case somehow an empty variable gets passed, what? it happens sometimes.
+                {
+                   $siteListdata = @("127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1")
+                }
+                
                 $columns = 4
                 $rows = [System.Math]::Ceiling($siteListdata.Length / $columns)
 
@@ -41,8 +55,8 @@
                         $statusCode = [int] $request.StatusCode
                         $statusDescription = $request.StatusDescription
                         $responseLength = "$($request.RawContentLength) bytes"
-                        $timeTaken =  $time
-
+                        $timeTaken =  $time 
+                        
                         "<td style='border-width:1px;border-style:solid;padding:5px'>
                             <h2>$hostName</h2>
                             <ul>
@@ -58,6 +72,7 @@
 
                             $(if($statusCode -ne 200) {
                                 "<b>THIS IS A TEST ERROR - No Status 200</b><br/>"
+                                
                             }
 
                             if($TimeTaken -gt 80) {
