@@ -3,7 +3,7 @@ function checkAzureLB($LBrg,$lbName,$tenantID,$alertType,$slackURI,$slackChan,$s
     #$LBrg | Out-Default
     
      # Authenticate now using the new Service Principal
-    $cred = Import-Clixml -Path "~\google drive\code\monitoring\azureMonitoringCreds.xml"
+    $cred = Import-Clixml -Path "azureMonitoringCreds.xml"
     
     # Authenticate using the Service Principal now
     $loginAccount = Add-AzureRmAccount -ServicePrincipal -Credential $cred -TenantId $tenantID
