@@ -1,16 +1,29 @@
 param (
     [int]
-    $Port = 8085
+    $port = 8085,
+    [string]
+    $smtpUser,
+    [securestring]
+    $smtpPassword,
+    [string]
+    $smtpServer,
+    [string]
+    $smtpAlertTarget,
+    [string]
+    $hostsListFile
+
 )
 
+#Module Imports
 if ((Get-Module -Name Pode | Measure-Object).Count -ne 0)
 {
     Remove-Module -Name Pode
 }
-
-
-# or just:
 Import-Module Pode
+
+#Pull in Vars
+$hostsListdata = Get-Content $hostsListFile 
+
 
 # create a server, and start listening on port 8085
 Server -Threads 2 {
@@ -43,7 +56,8 @@ Server -Threads 2 {
     # GET request for web page on "localhost:8085/"
     route 'get' '/' {
         param($session)
-        view 'simple' -Data @{ 'numbers' = @(1, 2, 3); }
+        view 'simple' -Data @{ 'smtpUser' = @($smtpUser);'smtpPassword' = @($smtpPassword);'smtpServer' = @($smtpServer);`
+        'smtpAlertTarget' = @($smtpAlertTarget);'hostsListdata' = @($hostsListdata);}
     }
 
     # GET request throws fake "500" server error status code
