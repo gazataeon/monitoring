@@ -1,18 +1,8 @@
-function checkAzureLB(
-[string]$resourceGroup,
-[string]$lbName,
-[string]$tenantID,
-[string]$alertType,
-[string]$slackURI,
-[string]$slackChan,
-[string]$smtpUser,
-[securestring]$smtpPassword,
-[string]$smtpServer,
-[string]$smtpAlertTarget)
+function checkAzureLB($resourceGroup,$lbName,$tenantID,$alertType,$slackURI,$slackChan,$smtpUser,$smtpPassword,$smtpServer,$smtpAlertTarget)
 {
 
-     # Authenticate now using the new Service Principal 
-    $cred = Import-Clixml -Path ..\..\azureMonitoringCreds.xml
+     # Authenticate now using the new Service Principal
+    $cred = Import-Clixml -Path "~\google drive\code\monitoring\azureMonitoringCreds.xml"
     
     # Authenticate using the Service Principal now
     Add-AzureRmAccount -ServicePrincipal -Credential $cred -TenantId $tenantID
@@ -31,8 +21,7 @@ function checkAzureLB(
     
     If ($lbNodeCount -lt ($webvms.count) )
     {
-    
-        if ($alertType = "slack")
+        if ($alertType -eq  "slack")
         {
             slackmessage -message "WARNING!!! You have $($lbNodeCount) LB nodes out of $($webvms.count) Web Vms in the Load Balancer pool '$lbName', resource group : '$resourceGroup'." -channel $slackChan -slackURI $slackURI
         }

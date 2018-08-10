@@ -48,7 +48,7 @@ $lbNodeCount = 3
 If ($lbNodeCount -lt ($webvms.count) )
 {
 
-    if ($alertType = "slack")
+    if ($alertType -eq "slack")
     {
         slackmessage -message "WARNING!!! You have $($lbNodeCount) LB nodes out of $($webvms.count) Web Vms in the Load Balancer pool '$lbName', resource group : '$resourceGroup'." -channel $slackChan -slackURI $slackURI
     }

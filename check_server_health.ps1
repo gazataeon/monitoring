@@ -20,7 +20,9 @@ param (
     [string]
     $LBrg,
     [string]
-    $LBname
+    $LBname,
+    [string]
+    $tenantID
  )
 
 #Module Imports

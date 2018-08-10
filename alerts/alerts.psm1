@@ -1,18 +1,5 @@
 #SMTP Mail User Function
-function mailUser(
-    [string]
-    $serverName,
-    [string]
-    $message,
-    [string]
-    $smtpUser,
-    [string]
-    $smtpPassword,
-    [string]
-    $smtpServer,
-    [string]
-    $smtpAlertTarget
-)
+function mailUser($serverName, $message, $smtpUser, $smtpPassword, $smtpServer, $smtpAlertTarget)
 
 {
 $SMTPhost = $smtpServer
@@ -22,9 +9,9 @@ $SMTPto = $smtpAlertTarget
 $secpasswd = ConvertTo-SecureString $smtpPassword -AsPlainText -Force
 $creds = New-Object System.Management.Automation.PSCredential ("username", $secpasswd)
 
-
 Send-MailMessage –From $SMTPfrom –To $SMTPto –Subject "ALERT FOR $($servername) " –Body "$($message)" -SmtpServer $SMTPhost -Credential $creds
 }
+
 
 #Slack Message Send Function
 function slackMessage($message, $slackURI, $channel)

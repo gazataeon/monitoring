@@ -54,9 +54,7 @@
                         $timeTaken =  $time 
 
                         #Check Load Balancer 
-                        checkAzureLB -resourceGroup $data.LBrg -lbName $data.LBname -tenantID $data.tenantID -alertType $alertType `
-                        -slackURI $data.slackURI -slackChan $data.slackChannel
-                        
+                       # checkAzureLB -resourceGroup $data.LBrg -lbName $data.LBname -tenantID $data.tenantID -alertType $data.alertType -slackURI $data.slackURI -slackChan $data.slackChannel
                         
                         "<td style='border-width:1px;border-style:solid;padding:5px'>
                             <h2>$hostName</h2>
@@ -74,7 +72,7 @@
                             $(if($statusCode -ne 200) {
                                 "<b>THIS IS A TEST ERROR - No Status 200</b><br/>"
 
-                                if ($data.alertType = "slack")
+                                if ($data.alertType -eq "slack")
                                 {
                                     slackMessage -message "No Status 200 for $hostName" -channel "$data.channel" -slackURI $data.slackURI
                                 }
@@ -87,7 +85,7 @@
                             if($TimeTaken -gt 80) {
                                 "<b>THIS IS A TEST ERROR - Bad response time</b><br/>"
 
-                                if ($data.alertType = "slack")
+                                if ($data.alertType -eq "slack")
                                 {
                                     slackmessage -message "Bad response time - $timeTaken ms for $hostName" -channel "$data.channel" -slackURI $data.slackURI
                                 }
@@ -100,7 +98,7 @@
                             if($memory -lt 2000) {
                                 "<b>THIS IS A TEST ERROR - Low Free Memory</b><br/>"
 
-                                if ($data.alertType = "slack")
+                                if ($data.alertType -eq "slack")
                                 {
                                     slackmessage -message "Low Free Memory - $memory MB  for $hostName" -channel "$data.channel" -slackURI $data.slackURI
                                 }
@@ -113,7 +111,7 @@
                             if($cpu -gt 40) {
                                 "<b>THIS IS A TEST ERROR - High CPU usage</b><br/>"
 
-                                    if ($data.alertType = "slack")
+                                    if ($data.alertType -eq "slack")
                                 {
                                     slackmessage -message "High CPU usage - $cpu %  for $hostName" -channel "$data.channel" -slackURI $data.slackURI
                                 }
