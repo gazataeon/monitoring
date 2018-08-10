@@ -50,6 +50,10 @@ if ([string]::IsNullOrEmpty($hostsListdata))
 # create a server, and start listening on port 8085
 Server -Threads 2 {
 
+    #pull in PS modules
+    script './alerts/alerts.psm1'
+    script './checks/checks.psm1'
+
     # listen on localhost:8085
     listen *:$Port http
 
