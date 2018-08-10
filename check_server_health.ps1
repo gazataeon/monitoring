@@ -28,7 +28,7 @@ if ((Get-Module -Name Pode | Measure-Object).Count -ne 0)
 {
     Remove-Module -Name Pode
 }
-Import-Module Pode
+Import-Module ..\pode\src\Pode.psm1 -ErrorAction Stop
 
 #Pull in hosts to check
 If (!([string]::IsNullOrEmpty($hostsListFile)))
