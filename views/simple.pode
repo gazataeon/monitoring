@@ -1,12 +1,20 @@
 <html>
     <head>
         <title>Prod Web Checks</title>
-        <meta http-equiv="refresh" content="30">
+        <meta http-equiv="refresh" content="360">
     </head>
     
     <body>
         <h1>EU1 Prod Web Tier - Health Checks - $((Get-Date).ToUniversalTime())</h1>
+         
+         $(
+            #Check Load Balancer 
+            $getLBstatus = checkAzureLB -LBrg $data.LBrg -lbName $data.LBname -tenantID $data.tenantID -alertType $data.alertType -slackURI $data.slackURI -slackChan $data.slackChannel
+         
+         "<b>$getLBstatus</b>"
+         )
 
+        
         <table id='myTable'>
             $(
        
@@ -53,8 +61,7 @@
                         $responseLength = "$($request.RawContentLength) bytes"
                         $timeTaken =  $time 
 
-                        #Check Load Balancer 
-                       # checkAzureLB -resourceGroup $data.LBrg -lbName $data.LBname -tenantID $data.tenantID -alertType $data.alertType -slackURI $data.slackURI -slackChan $data.slackChannel
+                       
                         
                         "<td style='border-width:1px;border-style:solid;padding:5px'>
                             <h2>$hostName</h2>
@@ -74,9 +81,9 @@
 
                                 if ($data.alertType -eq "slack")
                                 {
-                                    slackMessage -message "No Status 200 for $hostName" -channel "$data.channel" -slackURI $data.slackURI
+                                    slackMessage -message "No Status 200 for $hostName" -channel $data.slackchannel -slackURI $data.slackURI
                                 }
-                                else
+                                elseif ($data.alertType -eq "email")
                                 {
                                     mailUser -serverName $hostName -message "No Status 200 for $hostName" -smtpUser $data.smtpUser -smtpPassword $data.smtpPassword -smtpServer $data.smtpServer -smtpAlertTarget $data.smtpAlertTarget
                                 }
@@ -87,9 +94,9 @@
 
                                 if ($data.alertType -eq "slack")
                                 {
-                                    slackmessage -message "Bad response time - $timeTaken ms for $hostName" -channel "$data.channel" -slackURI $data.slackURI
+                                    slackmessage -message "Bad response time - $timeTaken ms for $hostName" -channel $data.slackchannel -slackURI $data.slackURI
                                 }
-                                else
+                                elseif ($data.alertType -eq "email")
                                 {
                                     mailuser -serverName $hostName -message "Bad response time - $timeTaken ms for $hostName" -smtpUser $data.smtpUser -smtpPassword $data.smtpPassword -smtpServer $data.smtpServer -smtpAlertTarget $data.smtpAlertTarget
                                 }
@@ -100,9 +107,9 @@
 
                                 if ($data.alertType -eq "slack")
                                 {
-                                    slackmessage -message "Low Free Memory - $memory MB  for $hostName" -channel "$data.channel" -slackURI $data.slackURI
+                                    slackmessage -message "Low Free Memory - $memory MB  for $hostName" -channel $data.slackchannel -slackURI $data.slackURI
                                 }
-                                else
+                                elseif ($data.alertType -eq "email")
                                 {
                                     mailuser -serverName $hostName -message "Low Free Memory - $memory MB  for $hostName" -smtpUser $data.smtpUser -smtpPassword $data.smtpPassword -smtpServer $data.smtpServer -smtpAlertTarget $data.smtpAlertTarget
                                 }
@@ -113,9 +120,9 @@
 
                                     if ($data.alertType -eq "slack")
                                 {
-                                    slackmessage -message "High CPU usage - $cpu %  for $hostName" -channel "$data.channel" -slackURI $data.slackURI
+                                    slackmessage -message "High CPU usage - $cpu %  for $hostName" -channel $data.slackchannel -slackURI $data.slackURI
                                 }
-                                else
+                                elseif ($data.alertType -eq "email")
                                 {
                                     mailuser -serverName $hostName -message "High CPU usage - $cpu %  for $hostName" -smtpUser $data.smtpUser -smtpPassword $data.smtpPassword -smtpServer $data.smtpServer -smtpAlertTarget $data.smtpAlertTarget
                                 }

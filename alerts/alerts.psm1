@@ -12,7 +12,6 @@ $creds = New-Object System.Management.Automation.PSCredential ("username", $secp
 Send-MailMessage –From $SMTPfrom –To $SMTPto –Subject "ALERT FOR $($servername) " –Body "$($message)" -SmtpServer $SMTPhost -Credential $creds
 }
 
-
 #Slack Message Send Function
 function slackMessage($message, $slackURI, $channel)
 {
@@ -30,5 +29,3 @@ function slackMessage($message, $slackURI, $channel)
         -Method Post `
         -Uri $slackURI | Out-Null
 }
-
-

@@ -81,12 +81,31 @@ Server -Threads 2 {
         'hello' | Out-Default
     }
 
+    # add to state
+    state set 'data-params' @{
+        'hostsListdata' = $hostsListdata;
+        'smtpUser' = $smtpUser;
+        'smtpPassword' = $smtpPassword;
+        'smtpServer' = $smtpServer;
+        'smtpAlertTarget' = $smtpAlertTarget;
+        'slackChannel' = $slackChannel;
+        'slackURI' = $slackURI;
+        'alertType' = $alertType;
+        'LBrg' = $LBrg;
+        'LBname' = $LBname;
+        'tenantID' = $tenantID
+    } | Out-Null
+
+    #$d | Out-Default
     # GET request for web page on "localhost:8085/"
     route 'get' '/' {
-        param($session) 
-        view 'simple' -Data @{ 'hostsListdata' = $hostsListdata; 'smtpUser' = $smtpUser;'smtpPassword' = $smtpPassword;'smtpServer' = $smtpServer; 'smtpAlertTarget' = $smtpAlertTarget;`
-                                'slackChannel' = $slackChannel; 'slackURI' = $slackURI; 'alertType' = $alertType; 'LBrg' = $LBrg; 'LBname' = $LBname; 'tenantID' = $tenantID } 
+        param($session)
+        $d = (state get 'data-params')
+        $d | Out-Default
+        view 'simple' -Data $d
     }
+
+
 
     # GET request throws fake "500" server error status code
     route 'get' '/error' {
