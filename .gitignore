@@ -23,6 +23,7 @@ $RECYCLE.BIN/
 *.lnk
 
 #Gaz Specific
-commands.txt
+commands.ps1
 azureMonitoringCreds.xml
 hostslist.txt
+generate_creds.ps1

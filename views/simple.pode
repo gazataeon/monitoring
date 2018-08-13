@@ -12,6 +12,7 @@
             $getLBstatus = checkAzureLB -LBrg $data.LBrg -lbName $data.LBname -tenantID $data.tenantID -alertType $data.alertType -slackURI $data.slackURI -slackChan $data.slackChannel
          
          "<b>$getLBstatus</b>"
+         "<p>"
          )
 
         
@@ -49,6 +50,7 @@
                         $time = try {
                             $result1 = Measure-Command { $request = Invoke-WebRequest -Uri $uri }
                             $result1.TotalMilliseconds
+                            "$result1"
                         } 
                         catch {
                             #Called in the event there's a 404
@@ -61,8 +63,6 @@
                         $responseLength = "$($request.RawContentLength) bytes"
                         $timeTaken =  $time 
 
-                       
-                        
                         "<td style='border-width:1px;border-style:solid;padding:5px'>
                             <h2>$hostName</h2>
                             <ul>

@@ -2,11 +2,59 @@ function checkAzureLB($LBrg,$lbName,$tenantID,$alertType,$slackURI,$slackChan,$s
 {
     #$LBrg | Out-Default
     
-     # Authenticate now using the new Service Principal
-    $cred = Import-Clixml -Path "azureMonitoringCreds.xml"
+    #Check to see if Azure Modules are imported and  Authenticate now using the new Service Principal
+     
+
+    #Check OS Ver
+    if ($PSVersionTable.Platform -ieq 'unix')
+    {
+        if (!(Get-Module -ListAvailable -Name azurerm.netcore) )
+        {
+        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+        Install-Module -Name AzureRM.Netcore
+        Import-Module -Name AzureRM.Netcore
+        }
+        # Using secure creds is not possible with PS core, so lock these files with the following:
+        # chown root:root pw.txt
+        # chmod 700 pw.txt
+        $appid = Get-Content -path appID.txt
+        $secpasswd = ConvertTo-SecureString (Get-Content -Path appPW.txt) -AsPlainText -Force
+
+        $cred = New-Object System.Management.Automation.PSCredential ($appID, $secpasswd)
+        # Authenticate using the Service Principal now
+        try {
+            $loginAccount = Add-AzureRmAccount -ServicePrincipal -Credential $cred -TenantId $tenantID
+        }
+        catch {
+            $_.Exception.Message  | Out-Default 
+        }
+    }
+    else 
+    {
+        if (!(Get-Module -ListAvailable -Name azurerm) )
+        {
+        Install-Module -Name AzureRM
+        Import-Module -Name AzureRM
+        }
+       
+        #Login
+        $dir = Split-Path -parent $MyInvocation.MyCommand.Path
+        $cred = Import-Clixml -Path "$($dir)\azureMonitoringCreds.xml"
+        
+        # Authenticate using the Service Principal now
+        try {
+            $loginAccount = Add-AzureRmAccount -ServicePrincipal -Credential $cred -TenantId $tenantID
+        }
+        catch {
+            $_.Exception.Message  | Out-Default
+        }
+    }
+
+
+
     
-    # Authenticate using the Service Principal now
-    $loginAccount = Add-AzureRmAccount -ServicePrincipal -Credential $cred -TenantId $tenantID
+    
+
     
     #get Load Balancer info
     $loadBalancer = Get-AzureRmLoadBalancer -ResourceGroupName $LBrg -Name $lbName
