@@ -48,9 +48,15 @@ if ([string]::IsNullOrEmpty($hostsListdata))
     $hostsListdata = "ERROR"
 }
 
+#find script Dir and pass it to modules
+$scriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
 
 # create a server, and start listening on port 8085
 Server -Threads 2 {
+
+    #get Present Working Dir
+
+    
 
     #pull in PS modules
     script './alerts/alerts.psm1'
@@ -84,6 +90,7 @@ Server -Threads 2 {
     # add to state
     state set 'data-params' @{
         'hostsListdata' = $hostsListdata;
+        'scriptDir' =  $scriptDir;
         'smtpUser' = $smtpUser;
         'smtpPassword' = $smtpPassword;
         'smtpServer' = $smtpServer;

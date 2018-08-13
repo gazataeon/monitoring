@@ -1,4 +1,4 @@
-function checkAzureLB($LBrg,$lbName,$tenantID,$alertType,$slackURI,$slackChan,$smtpUser,$smtpPassword,$smtpServer,$smtpAlertTarget)
+function checkAzureLB($LBrg,$lbName,$tenantID,$alertType,$slackURI,$slackChan,$smtpUser,$smtpPassword,$smtpServer,$smtpAlertTarget, $scriptDir)
 {
     #$LBrg | Out-Default
     
@@ -17,9 +17,10 @@ function checkAzureLB($LBrg,$lbName,$tenantID,$alertType,$slackURI,$slackChan,$s
         # Using secure creds is not possible with PS core, so lock these files with the following:
         # chown root:root pw.txt
         # chmod 700 pw.txt
-        $appid = Get-Content -path appID.txt
-        $secpasswd = ConvertTo-SecureString (Get-Content -Path appPW.txt) -AsPlainText -Force
+        $appid = Get-Content -path /opt/monitoring/appID.txt
+        $secpasswd = ConvertTo-SecureString (Get-Content -Path /opt/monitoring/appPW.txt) -AsPlainText -Force
 
+         
         $cred = New-Object System.Management.Automation.PSCredential ($appID, $secpasswd)
         # Authenticate using the Service Principal now
         try {
@@ -38,8 +39,7 @@ function checkAzureLB($LBrg,$lbName,$tenantID,$alertType,$slackURI,$slackChan,$s
         }
        
         #Login
-        $dir = Split-Path -parent $MyInvocation.MyCommand.Path
-        $cred = Import-Clixml -Path "$($dir)\azureMonitoringCreds.xml"
+        $cred = Import-Clixml -Path "$($scriptDir)\azureMonitoringCreds.xml"
         
         # Authenticate using the Service Principal now
         try {
