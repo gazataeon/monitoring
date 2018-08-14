@@ -9,7 +9,7 @@
          
          $(
             #Check Load Balancer 
-            $getLBstatus = checkAzureLB -LBrg $data.LBrg -lbName $data.LBname -tenantID $data.tenantID -alertType $data.alertType -slackURI $data.slackURI -slackChan $data.slackChannel -scriptDir $data.scriptDir
+            $getLBstatus = invoke-checkAzureLB -LBrg $data.LBrg -lbName $data.LBname -tenantID $data.tenantID -alertType $data.alertType -slackURI $data.slackURI -slackChan $data.slackChannel -scriptDir $data.scriptDir
          
          "<b>$getLBstatus</b>"
          "<p>"

@@ -1,4 +1,4 @@
-function checkAzureLB($LBrg,$lbName,$tenantID,$alertType,$slackURI,$slackChan,$smtpUser,$smtpPassword,$smtpServer,$smtpAlertTarget, $scriptDir)
+function invoke-checkAzureLB($LBrg,$lbName,$tenantID,$alertType,$slackURI,$slackChan,$smtpUser,$smtpPassword,$smtpServer,$smtpAlertTarget, $scriptDir)
 {
     #$LBrg | Out-Default
     
