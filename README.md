@@ -78,6 +78,7 @@ You can instead pass Email Configuration.
 - smtpServer (IP or hostname is fine)
 - smtpAlertTarget (an email address to send to)
 
-
-
-
+# to do
+monitor event log IDs
+capture logs
+graph responses 

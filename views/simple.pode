@@ -13,21 +13,29 @@
          
          "<b>$getLBstatus</b>"
          "<p>"
-         )
+        
+         
+        # Should pull in the hosts to be checked from the params - doesnt though because REASONS!
+        If (!([string]::IsNullOrEmpty($data.hostsListdata)))
+        {
+            $siteListdata = $data.hostsListdata
+        }
+        else # do this in case somehow an empty variable gets passed
+        {
+            $siteListdata = @("127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1")
+        }
+         
+        $eventLogs = invoke-logchecks -hostnames $siteListdata 
+        "<b>$eventLogs</b>"
+        "<p>"
+        )
 
+        
         
         <table id='myTable'>
             $(
        
-                # Should pull in the hosts to be checked from the params - doesnt though because REASONS!
-                If (!([string]::IsNullOrEmpty($data.hostsListdata)))
-                {
-                    $siteListdata = $data.hostsListdata
-                }
-                else # do this in case somehow an empty variable gets passed, what? it happens sometimes.
-                {
-                   $siteListdata = @("127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1", "127.0.0.1")
-                }
+          
                 
                 $columns = 4
                 $rows = [System.Math]::Ceiling($siteListdata.Length / $columns)
