@@ -44,7 +44,7 @@ else
 
 if ([string]::IsNullOrEmpty($hostsListdata))
 {
-    ThrowError -ExceptionMessage "Your Host List Text file is empty!"
+    ThrowError -ExceptionMessage "Your Host List Text file is empty!" | Out-Default
     $hostsListdata = "ERROR"
 }
 
@@ -55,8 +55,6 @@ $scriptDir = Split-Path -parent $MyInvocation.MyCommand.Path
 Server -Threads 2 {
 
     #get Present Working Dir
-
-    
 
     #pull in PS modules
     script './alerts/alerts.psm1'

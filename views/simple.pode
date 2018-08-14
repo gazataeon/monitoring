@@ -50,7 +50,7 @@
                         $time = try {
                             $result1 = Measure-Command { $request = Invoke-WebRequest -Uri $uri }
                             $result1.TotalMilliseconds
-                            "$result1"
+                            "$result1.TotalMilliseconds"
                         } 
                         catch {
                             #Called in the event there's a 404
