@@ -87,3 +87,25 @@ function checkAzureLB($LBrg,$lbName,$tenantID,$alertType,$slackURI,$slackChan,$s
     }
 
 }
+
+function invoke-logchecks($hostnames)
+
+{
+    $housenames | Out-Default
+    foreach ($server in $hostnames)
+    {
+        #last 2 hours
+        [array]$events = Get-EventLog -LogName "Sky Applications" -ComputerName "web-vm4" -After ([DateTime]::Today.AddDays(-1).addhours(2))  -EntryType Error 
+
+
+
+        if ($events.Count > 0)
+
+        {
+            write-host "Errors found in event log"
+
+            $events | Group-Object -Property source -noelement | Sort-Object -Property count -Descending | Out-Default
+            return ($events | Group-Object -Property source -noelement | Sort-Object -Property count -Descending )
+        }
+    }
+}
